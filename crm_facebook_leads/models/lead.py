@@ -5,11 +5,11 @@ import requests
 
 class CrmFacebookPage(models.Model):
     _name = 'crm.facebook.page'
-    
+
     name = fields.Char(required=True)
     access_token = fields.Char(required=True, string='Page Access Token')
     form_ids = fields.One2many('crm.facebook.form', 'page_id', string='Lead Forms')
-    
+
     @api.multi
     def get_forms(self):
         r = requests.get("https://graph.facebook.com/v2.12/" + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
@@ -23,7 +23,7 @@ class CrmFacebookPage(models.Model):
 
 class CrmFacebookForm(models.Model):
     _name = 'crm.facebook.form'
-    
+
     name = fields.Char(required=True)
     facebook_form_id = fields.Char(required=True, string='Form ID')
     access_token = fields.Char(required=True, related='page_id.access_token', string='Page Access Token')
@@ -33,7 +33,7 @@ class CrmFacebookForm(models.Model):
     campaign_id = fields.Many2one('utm.campaign')
     source_id = fields.Many2one('utm.source')
     medium_id = fields.Many2one('utm.medium')
-    
+
     def get_fields(self):
         self.mappings.unlink()
         r = requests.get("https://graph.facebook.com/v2.12/" + self.facebook_form_id, params = {'access_token': self.access_token, 'fields': 'qualifiers'}).json()
@@ -66,21 +66,21 @@ class CrmFacebookFormField(models.Model):
                                                           'text'))],
                                  required=False)
     facebook_field = fields.Char(required=True)
-    
+
     _sql_constraints = [
                         ('field_unique', 'unique(form_id, odoo_field, facebook_field)', 'Mapping must be unique per form')
     ]
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
-    
+
     facebook_lead_id = fields.Char('Lead ID')
     facebook_page_id = fields.Many2one('crm.facebook.page', related='facebook_form_id.page_id', store=True, string='Page', readonly=True)
     facebook_form_id = fields.Many2one('crm.facebook.form', string='Form')
-    
+
     _sql_constraints = [
                         ('facebook_lead_unique', 'unique(facebook_lead_id)', 'This Facebook lead already exists!')
     ]
-    
+
     @api.model
     def get_facebook_leads(self):
         for page in self.env['crm.facebook.page'].search([]):
