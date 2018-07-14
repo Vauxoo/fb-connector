@@ -82,7 +82,8 @@ class CrmLead(models.Model):
                         ('facebook_lead_unique', 'unique(facebook_lead_id)', 'This Facebook lead already exists!')
     ]
 
-    def lead_creation(self, vals, notes, lead, form):
+    def prepare_lead_creation(self, lead, form):
+        vals, notes = self.get_fields_from_data(lead, form)
         vals.update({
             'facebook_lead_id': lead['id'],
             'description': "\n".join(notes),
@@ -93,7 +94,13 @@ class CrmLead(models.Model):
             'facebook_form_id': form.id,
             'date_open': lead['created_time'].split('+')[0].replace('T', ' ')
         })
-        return self.create(vals)
+        return vals
+
+    def lead_creation(self, lead, form):
+        vals = self.prepare_lead_creation(lead, form)
+        lead_id = self.create(vals)
+        self.env.cr.commit()
+        return lead_id
 
     def get_fields_from_data(self, lead, form):
         vals, notes = {}, []
@@ -126,14 +133,10 @@ class CrmLead(models.Model):
         if not r.get('data'):
             return
         for lead in r['data']:
-            if self.search([('facebook_lead_id', '=', lead.get('id')), '|', ('active', '=', True), ('active', '=', False)]):
-                continue
-            vals, notes = self.get_fields_from_data(lead, form)
-            self.lead_creation(vals, notes, lead, form)
-            self.env.cr.commit()
+            if not self.search([('facebook_lead_id', '=', lead.get('id')), '|', ('active', '=', True), ('active', '=', False)]):
+                self.lead_creation(lead, form)
         if r.get('paging') and r['paging'].get('next'):
-            r = requests.get(r['paging']['next']).json()
-            self.lead_processing(r, form)
+            self.lead_processing(requests.get(r['paging']['next']).json(), form)
         return
 
     @api.model
