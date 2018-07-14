@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 import requests
 
+
 class CrmFacebookPage(models.Model):
     _name = 'crm.facebook.page'
 
@@ -111,6 +112,8 @@ class CrmLead(models.Model):
                     vals.update({odoo_field.name: field_data['values'][0].split('+')[0].replace('T', ' ')})
                 elif odoo_field.ttype == 'selection':
                     vals.update({odoo_field.name: field_data['values'][0]})
+                elif odoo_field.ttype == 'boolean':
+                    vals.update({odoo_field.name: field_data['values'][0] == 'true' if field_data.get('values') else False})
                 else:
                     vals.update({odoo_field.name: ", ".join(field_data['values'])})
             else:
@@ -120,12 +123,17 @@ class CrmLead(models.Model):
         return vals, notes
 
     def lead_processing(self, r, form):
+        if not r.get('data'):
+            return
         for lead in r['data']:
             if self.search([('facebook_lead_id', '=', lead.get('id')), '|', ('active', '=', True), ('active', '=', False)]):
                 continue
             vals, notes = self.get_fields_from_data(lead, form)
-            # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
             self.lead_creation(vals, notes, lead, form)
+            self.env.cr.commit()
+        if r.get('paging') and r['paging'].get('next'):
+            r = requests.get(r['paging']['next']).json()
+            self.lead_processing(r, form)
         return
 
     @api.model
@@ -133,5 +141,6 @@ class CrmLead(models.Model):
         # /!\ TODO: Add this URL as a configuration setting in the company
         fb_api = "https://graph.facebook.com/v2.12/"
         for form in self.env['crm.facebook.form'].search([]):
+            # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
             r = requests.get(fb_api + form.facebook_form_id + "/leads", params = {'access_token': form.access_token}).json()
             self.lead_processing(r, form)
