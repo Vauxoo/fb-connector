@@ -103,6 +103,7 @@ class CrmLead(models.Model):
         'crm.facebook.page', related='facebook_form_id.page_id',
         store=True, readonly=True)
     facebook_form_id = fields.Many2one('crm.facebook.form')
+    facebook_date_create = fields.Datetime()
 
     _sql_constraints = [
         ('facebook_lead_unique', 'unique(facebook_lead_id)',
@@ -148,7 +149,7 @@ class CrmLead(models.Model):
             'medium_id': form.medium_id and form.medium_id.id or
             self.get_ad(lead),
             'facebook_form_id': form.id,
-            'date_open': lead['created_time'].split('+')[0].replace('T', ' ')
+            'facebook_date_create': lead['created_time'].split('+')[0].replace('T', ' ')
         })
         return vals
 
