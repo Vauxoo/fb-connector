@@ -145,5 +145,5 @@ class CrmLead(models.Model):
         fb_api = "https://graph.facebook.com/v2.12/"
         for form in self.env['crm.facebook.form'].search([]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
-            r = requests.get(fb_api + form.facebook_form_id + "/leads", params = {'access_token': form.access_token}).json()
+            r = requests.get(fb_api + form.facebook_form_id + "/leads", params = {'access_token': form.access_token, 'fields': 'created_time,field_data,ad_id,ad_name,campaign_id,campaign_name'}).json()
             self.lead_processing(r, form)
