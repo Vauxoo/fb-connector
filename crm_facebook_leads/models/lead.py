@@ -71,16 +71,69 @@ class CrmFacebookFormField(models.Model):
     _sql_constraints = [
                         ('field_unique', 'unique(form_id, odoo_field, facebook_field)', 'Mapping must be unique per form')
     ]
+
+
+class UtmMedium(models.Model):
+    _inherit = 'utm.medium'
+
+    facebook_ad_id = fields.Char()
+
+    _sql_constraints = [
+        ('facebook_ad_unique', 'unique(facebook_ad_id)',
+         'This Facebook Ad already exists!')
+    ]
+
+
+class UtmCampaign(models.Model):
+    _inherit = 'utm.campaign'
+
+    facebook_campaign_id = fields.Char()
+
+    _sql_constraints = [
+        ('facebook_campaign_unique', 'unique(facebook_campaign_id)',
+         'This Facebook Campaign already exists!')
+    ]
+
+
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    facebook_lead_id = fields.Char('Lead ID')
-    facebook_page_id = fields.Many2one('crm.facebook.page', related='facebook_form_id.page_id', store=True, string='Page', readonly=True)
-    facebook_form_id = fields.Many2one('crm.facebook.form', string='Form')
+    facebook_lead_id = fields.Char()
+    facebook_page_id = fields.Many2one(
+        'crm.facebook.page', related='facebook_form_id.page_id',
+        store=True, readonly=True)
+    facebook_form_id = fields.Many2one('crm.facebook.form')
 
     _sql_constraints = [
-                        ('facebook_lead_unique', 'unique(facebook_lead_id)', 'This Facebook lead already exists!')
+        ('facebook_lead_unique', 'unique(facebook_lead_id)',
+         'This Facebook lead already exists!')
     ]
+
+    def get_ad(self, lead):
+        ad_obj = self.env['utm.medium']
+        if not lead.get('ad_id'):
+            return ad_obj
+        if not ad_obj.search(
+                [('facebook_ad_id', '=', lead['ad_id'])]):
+            return ad_obj.create({
+                'facebook_ad_id': lead['ad_id'], 'name': lead['ad_name'], }).id
+
+        return ad_obj.search(
+            [('facebook_ad_id', '=', lead['ad_id'])], limit=1)[0].id
+
+    def get_campaign(self, lead):
+        campaign_obj = self.env['utm.campaign']
+        if not lead.get('facebook_campaign_id'):
+            return campaign_obj
+        if not campaign_obj.search(
+                [('facebook_campaign_id', '=', lead['facebook_campaign_id'])]):
+            return campaign_obj.create({
+                'facebook_campaign_id': lead['facebook_campaign_id'],
+                'name': lead['campaign_name'], }).id
+
+        return campaign_obj.search(
+            [('facebook_campaign_id', '=', lead['facebook_campaign_id'])],
+            limit=1)[0].id
 
     def prepare_lead_creation(self, lead, form):
         vals, notes = self.get_fields_from_data(lead, form)
@@ -89,9 +142,11 @@ class CrmLead(models.Model):
             'name': self.get_opportunity_name(vals, lead, form),
             'description': "\n".join(notes),
             'team_id': form.team_id and form.team_id.id,
-            'campaign_id': form.campaign_id and form.campaign_id.id,
+            'campaign_id': form.campaign_id and form.campaign_id.id or
+            self.get_campaign(lead),
             'source_id': form.source_id and form.source_id.id,
-            'medium_id': form.medium_id and form.medium_id.id,
+            'medium_id': form.medium_id and form.medium_id.id or
+            self.get_ad(lead),
             'facebook_form_id': form.id,
             'date_open': lead['created_time'].split('+')[0].replace('T', ' ')
         })
@@ -149,6 +204,8 @@ class CrmLead(models.Model):
         lead_data.update([(l['name'], l['values'][0])
                           for l in field_data
                           if l.get('name') and l.get('values')])
+        lead_data['facebook_campaign_id'] = (
+            lead.get('campaign_id') and lead.pop('campaign_id'))
         return lead_data
 
     def lead_processing(self, r, form):
