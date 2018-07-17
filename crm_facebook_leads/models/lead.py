@@ -98,12 +98,12 @@ class UtmCampaign(models.Model):
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    facebook_lead_id = fields.Char()
+    facebook_lead_id = fields.Char(readonly=True)
     facebook_page_id = fields.Many2one(
         'crm.facebook.page', related='facebook_form_id.page_id',
         store=True, readonly=True)
-    facebook_form_id = fields.Many2one('crm.facebook.form')
-    facebook_date_create = fields.Datetime()
+    facebook_form_id = fields.Many2one('crm.facebook.form', readonly=True)
+    facebook_date_create = fields.Datetime(readonly=True)
 
     _sql_constraints = [
         ('facebook_lead_unique', 'unique(facebook_lead_id)',

@@ -13,18 +13,39 @@
             <field name="code" eval="'model.get_facebook_leads()'"/>
 		</record>
 
-        <record id="crm_lead_form" model="ir.ui.view">
+        <record id="crm_case_form_view_leads" model="ir.ui.view">
             <field name="name">crm.lead.form</field>
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
             <field name="arch" type="xml">
-            	<group name="categorization" position="after">
-            		<group name="facebook_info" string="Facebook Info">
-	            		<field name="facebook_lead_id"/>
-	            		<field name="facebook_form_id"/>
-	            		<field name="facebook_page_id"/>
-            		</group>
-            	</group>
+                <xpath expr='//page[@name="extra"]' position='after'>
+                    <page name="categorization" string="Facebook Info">
+                        <group name="facebook_info" string="Facebook Info">
+                            <field name="facebook_lead_id"/>
+                            <field name="facebook_date_create"/>
+                            <field name="facebook_form_id"/>
+                            <field name="facebook_page_id"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="crm_case_form_view_oppor" model="ir.ui.view">
+            <field name="name">crm.lead.form</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
+                <xpath expr='//page[@name="lead"]' position='after'>
+                    <page name="categorization" string="Facebook Info">
+                        <group name="facebook_info" string="Facebook Info">
+                            <field name="facebook_lead_id"/>
+                            <field name="facebook_date_create"/>
+                            <field name="facebook_form_id"/>
+                            <field name="facebook_page_id"/>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
 
@@ -63,7 +84,7 @@
                 </tree>
             </field>
         </record>
-        
+
         <record model="ir.actions.act_window" id="action_crm_facebook_page">
             <field name="name">Facebook Pages</field>
             <field name="res_model">crm.facebook.page</field>
@@ -129,7 +150,7 @@
                 </tree>
             </field>
         </record>
-        
+
         <record model="ir.actions.act_window" id="action_crm_facebook_form">
             <field name="name">Facebook Forms</field>
             <field name="res_model">crm.facebook.form</field>
