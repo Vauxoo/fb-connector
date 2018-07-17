@@ -63,6 +63,7 @@
                     	<field name="form_ids">
                     		<tree editable="0" readonly="1">
          		  			   	<field name="name"/>
+                                <field name="allow_to_sync"/>
          		  			   	<field name="facebook_form_id"/>
                     			<field name="team_id"/>
                     			<field name="campaign_id"/>
@@ -112,11 +113,12 @@
                 	<group>
 	                    <group>
 	                        <field name="name"/>
+                            <field name="allow_to_sync"/>
 	                        <field name="team_id"/>
 	                    </group>
 	                    <group>
-	                        <field name="page_id"/>
-	                        <field name="facebook_form_id"/>
+                            <field name="page_id" readonly='1'/>
+                            <field name="facebook_form_id" readonly='1'/>
 	                        <field name="access_token" invisible="1"/>
                         </group>
 	                    <group string="Tracking Info">
@@ -144,8 +146,9 @@
             <field name="arch" type="xml">
                 <tree>
 	                <field name="name"/>
-	                <field name="facebook_form_id"/>
-	                <field name="page_id"/>
+	                <field name="allow_to_sync"/>
+	                <field name="facebook_form_id" readonly='1'/>
+	                <field name="page_id" readonly='1'/>
 	                <field name="team_id"/>
                 </tree>
             </field>
