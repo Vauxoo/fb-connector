@@ -23,8 +23,12 @@
                         <group name="facebook_info" string="Facebook Info">
                             <field name="facebook_lead_id"/>
                             <field name="facebook_date_create"/>
-                            <field name="facebook_form_id"/>
                             <field name="facebook_page_id"/>
+                            <field name="facebook_form_id"/>
+                            <field name="facebook_adset_id"/>
+                            <field name="facebook_ad_id"/>
+                            <field name="facebook_campaign_id"/>
+                            <field name="facebook_is_organic"/>
                         </group>
                     </page>
                 </xpath>
@@ -41,8 +45,12 @@
                         <group name="facebook_info" string="Facebook Info">
                             <field name="facebook_lead_id"/>
                             <field name="facebook_date_create"/>
-                            <field name="facebook_form_id"/>
                             <field name="facebook_page_id"/>
+                            <field name="facebook_form_id"/>
+                            <field name="facebook_adset_id"/>
+                            <field name="facebook_ad_id"/>
+                            <field name="facebook_campaign_id"/>
+                            <field name="facebook_is_organic"/>
                         </group>
                     </page>
                 </xpath>

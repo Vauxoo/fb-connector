@@ -85,6 +85,18 @@ class UtmMedium(models.Model):
     ]
 
 
+class UtmAdset(models.Model):
+    _name = 'utm.adset'
+
+    name = fields.Char()
+    facebook_adset_id = fields.Char()
+
+    _sql_constraints = [
+        ('facebook_adset_unique', 'unique(facebook_adset_id)',
+         'This Facebook AdSet already exists!')
+    ]
+
+
 class UtmCampaign(models.Model):
     _inherit = 'utm.campaign'
 
@@ -104,7 +116,15 @@ class CrmLead(models.Model):
         'crm.facebook.page', related='facebook_form_id.page_id',
         store=True, readonly=True)
     facebook_form_id = fields.Many2one('crm.facebook.form', readonly=True)
+    facebook_adset_id = fields.Many2one('utm.adset', readonly=True)
+    facebook_ad_id = fields.Many2one(
+        'utm.medium', related='medium_id', store=True, readonly=True,
+        string='Facebook Ad')
+    facebook_campaign_id = fields.Many2one(
+        'utm.campaign', related='campaign_id', store=True, readonly=True,
+        string='Facebook Campaign')
     facebook_date_create = fields.Datetime(readonly=True)
+    facebook_is_organic = fields.Boolean(readonly=True)
 
     _sql_constraints = [
         ('facebook_lead_unique', 'unique(facebook_lead_id)',
@@ -123,24 +143,37 @@ class CrmLead(models.Model):
         return ad_obj.search(
             [('facebook_ad_id', '=', lead['ad_id'])], limit=1)[0].id
 
+    def get_adset(self, lead):
+        ad_obj = self.env['utm.adset']
+        if not lead.get('adset_id'):
+            return ad_obj
+        if not ad_obj.search(
+                [('facebook_adset_id', '=', lead['adset_id'])]):
+            return ad_obj.create({
+                'facebook_adset_id': lead['adset_id'], 'name': lead['adset_name'], }).id
+
+        return ad_obj.search(
+            [('facebook_adset_id', '=', lead['adset_id'])], limit=1)[0].id
+
     def get_campaign(self, lead):
         campaign_obj = self.env['utm.campaign']
-        if not lead.get('facebook_campaign_id'):
+        if not lead.get('campaign_id'):
             return campaign_obj
         if not campaign_obj.search(
-                [('facebook_campaign_id', '=', lead['facebook_campaign_id'])]):
+                [('facebook_campaign_id', '=', lead['campaign_id'])]):
             return campaign_obj.create({
-                'facebook_campaign_id': lead['facebook_campaign_id'],
+                'facebook_campaign_id': lead['campaign_id'],
                 'name': lead['campaign_name'], }).id
 
         return campaign_obj.search(
-            [('facebook_campaign_id', '=', lead['facebook_campaign_id'])],
+            [('facebook_campaign_id', '=', lead['campaign_id'])],
             limit=1)[0].id
 
     def prepare_lead_creation(self, lead, form):
         vals, notes = self.get_fields_from_data(lead, form)
         vals.update({
             'facebook_lead_id': lead['id'],
+            'facebook_is_organic': lead['is_organic'],
             'name': self.get_opportunity_name(vals, lead, form),
             'description': "\n".join(notes),
             'team_id': form.team_id and form.team_id.id,
@@ -149,6 +182,7 @@ class CrmLead(models.Model):
             'source_id': form.source_id and form.source_id.id,
             'medium_id': form.medium_id and form.medium_id.id or
             self.get_ad(lead),
+            'facebook_adset_id': self.get_adset(lead),
             'facebook_form_id': form.id,
             'facebook_date_create': lead['created_time'].split('+')[0].replace('T', ' ')
         })
@@ -206,8 +240,6 @@ class CrmLead(models.Model):
         lead_data.update([(l['name'], l['values'][0])
                           for l in field_data
                           if l.get('name') and l.get('values')])
-        lead_data['facebook_campaign_id'] = (
-            lead.get('campaign_id') and lead.pop('campaign_id'))
         return lead_data
 
     def lead_processing(self, r, form):
@@ -227,5 +259,5 @@ class CrmLead(models.Model):
         fb_api = "https://graph.facebook.com/v2.12/"
         for form in self.env['crm.facebook.form'].search([('allow_to_sync', '=', True)]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
-            r = requests.get(fb_api + form.facebook_form_id + "/leads", params = {'access_token': form.access_token, 'fields': 'created_time,field_data,ad_id,ad_name,campaign_id,campaign_name'}).json()
+            r = requests.get(fb_api + form.facebook_form_id + "/leads", params = {'access_token': form.access_token, 'fields': 'created_time,field_data,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,is_organic'}).json()
             self.lead_processing(r, form)
