@@ -247,14 +247,24 @@ class CrmLead(models.Model):
         return lead_data
 
     def lead_processing(self, r, form):
-        if not r.get('data'):
-            return
-        for lead in r['data']:
-            lead = self.process_lead_field_data(lead)
-            if not self.search([('facebook_lead_id', '=', lead.get('id')), '|', ('active', '=', True), ('active', '=', False)]):
+        data = r.get('data')
+        paging = r.get('paging') and r['paging'].get('next')
+        while data:
+            r = {}
+            for lead in data:
+                # /!\ NOTE: `field_data` is where lead data resides
+                # if not lead.get('field_data'):
+                #     continue
+                lead = self.process_lead_field_data(lead)
+                if self.search(
+                        [('facebook_lead_id', '=', lead.get('id')),
+                         '|', ('active', '=', True), ('active', '=', False)]):
+                    continue
                 self.lead_creation(lead, form)
-        if r.get('paging') and r['paging'].get('next'):
-            self.lead_processing(requests.get(r['paging']['next']).json(), form)
+            if paging:
+                r = requests.get(paging).json()
+                data = r.get('data')
+                paging = r.get('paging') and r['paging'].get('next')
         return
 
     @api.model
