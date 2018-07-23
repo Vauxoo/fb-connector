@@ -256,6 +256,13 @@ class CrmLead(models.Model):
             lead = self.process_lead_field_data(lead)
             if not self.search([('facebook_lead_id', '=', lead.get('id')), '|', ('active', '=', True), ('active', '=', False)]):
                 self.lead_creation(lead, form)
+
+        # /!\ NOTE: Once finished a page let us commit that
+        try:
+            self.env.cr.commit()
+        except Exception:
+            self.env.cr.rollback()
+
         if r.get('paging') and r['paging'].get('next'):
             _logger.info('Fetching a new page in Form: %s' % form.name)
             self.lead_processing(requests.get(r['paging']['next']).json(), form)
