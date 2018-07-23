@@ -196,13 +196,7 @@ class CrmLead(models.Model):
 
     def lead_creation(self, lead, form):
         vals = self.prepare_lead_creation(lead, form)
-        try:
-            lead_id = self.create(vals)
-            self.env.cr.commit()
-        except Exception:
-            self.env.cr.rollback()
-            return env['crm.lead']
-        return lead_id
+        return self.create(vals)
 
     def get_opportunity_name(self, vals, lead, form):
         if not vals.get('name'):
