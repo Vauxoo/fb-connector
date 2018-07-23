@@ -171,6 +171,12 @@ class CrmLead(models.Model):
 
     def prepare_lead_creation(self, lead, form):
         vals, notes = self.get_fields_from_data(lead, form)
+        if not vals.get('email_from') and lead.get('email'):
+            vals['email_from'] = lead['email']
+        if not vals.get('contact_name') and lead.get('full_name'):
+            vals['contact_name'] = lead['full_name']
+        if not vals.get('phone') and lead.get('phone_number'):
+            vals['phone'] = lead['phone_number']
         vals.update({
             'facebook_lead_id': lead['id'],
             'facebook_is_organic': lead['is_organic'],
@@ -200,10 +206,8 @@ class CrmLead(models.Model):
 
     def get_opportunity_name(self, vals, lead, form):
         if not vals.get('name'):
-            name = '%s - %s' % (form.name, lead['id'])
-        else:
-            name = vals.get('name')
-        return name
+            vals['name'] = '%s - %s' % (form.name, lead['id'])
+        return vals['name']
 
     def get_fields_from_data(self, lead, form):
         vals, notes = {}, []
