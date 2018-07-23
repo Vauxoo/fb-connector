@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+import logging
 import requests
+
+from odoo import models, fields, api
+
+
+_logger = logging.getLogger(__name__)
 
 
 class CrmFacebookPage(models.Model):
@@ -252,6 +257,7 @@ class CrmLead(models.Model):
             if not self.search([('facebook_lead_id', '=', lead.get('id')), '|', ('active', '=', True), ('active', '=', False)]):
                 self.lead_creation(lead, form)
         if r.get('paging') and r['paging'].get('next'):
+            _logger.info('Fetching a new page in Form: %s' % form.name)
             self.lead_processing(requests.get(r['paging']['next']).json(), form)
         return
 
@@ -261,5 +267,7 @@ class CrmLead(models.Model):
         fb_api = "https://graph.facebook.com/v2.12/"
         for form in self.env['crm.facebook.form'].search([('allow_to_sync', '=', True)]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
+            _logger.info('Starting to fetch leads from Form: %s' % form.name)
             r = requests.get(fb_api + form.facebook_form_id + "/leads", params = {'access_token': form.access_token, 'fields': 'created_time,field_data,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,is_organic'}).json()
             self.lead_processing(r, form)
+        _logger.info('Fetch of leads has ended')
