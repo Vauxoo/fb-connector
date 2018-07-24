@@ -16,16 +16,27 @@ class CrmFacebookPage(models.Model):
     access_token = fields.Char(required=True, string='Page Access Token')
     form_ids = fields.One2many('crm.facebook.form', 'page_id', string='Lead Forms')
 
+    def form_processing(self, r):
+        if not r.get('data'):
+            return
+
+        for form in r['data']:
+            if self.form_ids.filtered(
+                    lambda f: f.facebook_form_id == form['id']):
+                continue
+            self.env['crm.facebook.form'].create({
+                'name': form['name'],
+                'facebook_form_id': form['id'],
+                'page_id': self.id}).get_fields()
+
+        if r.get('paging') and r['paging'].get('next'):
+            self.form_processing(requests.get(r['paging']['next']).json())
+        return
+
     @api.multi
     def get_forms(self):
         r = requests.get("https://graph.facebook.com/v2.12/" + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
-        for form in r['data']:
-            if not self.form_ids.filtered(lambda f: f.facebook_form_id == form['id']):
-                self.env['crm.facebook.form'].create({
-                                                'name': form['name'],
-                                                'facebook_form_id': form['id'],
-                                                'page_id': self.id
-                                             }).get_fields()
+        self.form_processing(requests.get(r['paging']['next']).json())
 
 class CrmFacebookForm(models.Model):
     _name = 'crm.facebook.form'
