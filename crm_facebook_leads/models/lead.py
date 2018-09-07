@@ -36,7 +36,7 @@ class CrmFacebookPage(models.Model):
     @api.multi
     def get_forms(self):
         r = requests.get("https://graph.facebook.com/v2.12/" + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
-        self.form_processing(requests.get(r['paging']['next']).json())
+        self.form_processing(r)
 
 class CrmFacebookForm(models.Model):
     _name = 'crm.facebook.form'
