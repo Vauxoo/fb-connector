@@ -2,6 +2,7 @@
 
 import logging
 import requests
+from urllib import parse
 
 from odoo import models, fields, api
 
@@ -291,13 +292,14 @@ class CrmLead(models.Model):
         for form in self.env['crm.facebook.form'].search([('allow_to_sync', '=', True)]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
             _logger.info('Starting to fetch leads from Form: %s' % form.name)
-            r = requests.get(
-                fb_api + form.facebook_form_id + "/leads",
-                params = {
-                    'access_token': form.access_token,
-                    'fields': 'created_time,field_data,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,is_organic'
-                }
-            )
-            _logger.info('Lead form %s returned code: %s' % (form.name, r.status_code))
+            var = fb_api + form.facebook_form_id + "/leads"
+            params = {
+                'access_token': form.access_token,
+                'fields': 'created_time,field_data,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,is_organic',
+                'filtering': [
+                    {"field": "time_created",
+                     "operator": "GREATER_THAN", "value": 1537920000}],
+            }
+            r = requests.get(var, params=parse.urlencode(params))
             self.lead_processing(r.json(), form)
         _logger.info('Fetch of leads has ended')
