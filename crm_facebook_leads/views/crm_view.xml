@@ -1,5 +1,4 @@
 <odoo>
-	<data>
 		<record id="crm_facebook_cron" model="ir.cron">
 			<field name="name">Fetch Facebook Leads</field>
 			<field name="active" eval="True"/>
@@ -179,5 +178,4 @@
             sequence="101"
             action="action_crm_facebook_form"
             groups="sales_team.group_sale_manager"/>
-	</data>
 </odoo>
