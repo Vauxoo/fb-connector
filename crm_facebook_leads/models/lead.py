@@ -106,6 +106,7 @@ class UtmMedium(models.Model):
 
 class UtmAdset(models.Model):
     _name = 'utm.adset'
+    _description = 'Utm Adset'
 
     name = fields.Char()
     facebook_adset_id = fields.Char()
