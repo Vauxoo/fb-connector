@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class CrmFacebookPage(models.Model):
     _name = 'crm.facebook.page'
+    _description = 'Facebook Page'
 
     name = fields.Char(required=True)
     access_token = fields.Char(required=True, string='Page Access Token')
@@ -40,6 +41,7 @@ class CrmFacebookPage(models.Model):
 
 class CrmFacebookForm(models.Model):
     _name = 'crm.facebook.form'
+    _description = 'Facebook Form Page'
 
     name = fields.Char(required=True)
     allow_to_sync = fields.Boolean()
@@ -65,6 +67,7 @@ class CrmFacebookForm(models.Model):
 
 class CrmFacebookFormField(models.Model):
     _name = 'crm.facebook.form.field'
+    _description = 'Facebook form fields'
 
     form_id = fields.Many2one('crm.facebook.form', required=True, ondelete='cascade', string='Form')
     name = fields.Char()
