@@ -36,7 +36,8 @@ class CrmFacebookPage(models.Model):
 
     @api.multi
     def get_forms(self):
-        r = requests.get("https://graph.facebook.com/v2.12/" + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
+        fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
+        r = requests.get(fb_api + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
         self.form_processing(r)
 
 class CrmFacebookForm(models.Model):
@@ -56,7 +57,8 @@ class CrmFacebookForm(models.Model):
 
     def get_fields(self):
         self.mappings.unlink()
-        r = requests.get("https://graph.facebook.com/v2.12/" + self.facebook_form_id, params = {'access_token': self.access_token, 'fields': 'qualifiers'}).json()
+        fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
+        r = requests.get(fb_api + self.facebook_form_id, params = {'access_token': self.access_token, 'fields': 'qualifiers'}).json()
         if r.get('qualifiers'):
             for qualifier in r.get('qualifiers'):
                 self.env['crm.facebook.form.field'].create({
@@ -286,7 +288,7 @@ class CrmLead(models.Model):
     @api.model
     def get_facebook_leads(self):
         # /!\ TODO: Add this URL as a configuration setting in the company
-        fb_api = "https://graph.facebook.com/v2.12/"
+        fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
         for form in self.env['crm.facebook.form'].search([('allow_to_sync', '=', True)]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
             _logger.info('Starting to fetch leads from Form: %s' % form.name)

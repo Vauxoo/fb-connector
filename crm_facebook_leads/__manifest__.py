@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Lead Automation',
-    'version': '12.0.0.0.1',
+    'version': '12.0.0.0.2',
 
     # any module necessary for this one to work correctly
     'depends': ['crm'],
@@ -24,6 +24,7 @@
 
     # always loaded
     'data': [
+        'data/ir_config_parameter_data.xml',
         'security/ir.model.access.csv',
         'views/crm_view.xml',
     ]
