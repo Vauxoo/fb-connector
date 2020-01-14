@@ -297,7 +297,7 @@ class CrmLead(models.Model):
                     'access_token': form.access_token,
                     'fields': 'created_time,field_data,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,is_organic'
                 }
-            ).json()
+            )
             _logger.info('Lead form %s returned code: %s' % (form.name, r.status_code))
-            self.lead_processing(r, form)
+            self.lead_processing(r.json(), form)
         _logger.info('Fetch of leads has ended')
