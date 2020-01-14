@@ -287,11 +287,17 @@ class CrmLead(models.Model):
 
     @api.model
     def get_facebook_leads(self):
-        # /!\ TODO: Add this URL as a configuration setting in the company
         fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
         for form in self.env['crm.facebook.form'].search([('allow_to_sync', '=', True)]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
             _logger.info('Starting to fetch leads from Form: %s' % form.name)
-            r = requests.get(fb_api + form.facebook_form_id + "/leads", params = {'access_token': form.access_token, 'fields': 'created_time,field_data,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,is_organic'}).json()
+            r = requests.get(
+                fb_api + form.facebook_form_id + "/leads",
+                params = {
+                    'access_token': form.access_token,
+                    'fields': 'created_time,field_data,ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,is_organic'
+                }
+            ).json()
+            _logger.info('Lead form %s returned code: %s' % (form.name, r.status_code))
             self.lead_processing(r, form)
         _logger.info('Fetch of leads has ended')
