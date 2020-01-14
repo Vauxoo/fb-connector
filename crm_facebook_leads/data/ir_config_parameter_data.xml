@@ -1,0 +1,9 @@
+<odoo noupdate="1">
+
+    <!-- Facebook Graph API Url Parameter -->
+    <record id="facebook_api_url" model="ir.config_parameter">
+        <field name="key">facebook.api.url</field>
+        <field name="value">https://graph.facebook.com/v5.0/</field>
+    </record>
+
+</odoo>
