@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <odoo>
     <record id="crm_facebook_cron" model="ir.cron">
         <field name="name">Fetch Facebook Leads</field>
