@@ -41,7 +41,6 @@ class CrmFacebookPage(models.Model):
         if response.get('paging', {}).get('next'):
             self.form_processing(requests.get(response['paging']['next']).json())
 
-    @api.multi
     def get_forms(self):
         fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
         response = requests.get(fb_api + self.name + "/leadgen_forms",
