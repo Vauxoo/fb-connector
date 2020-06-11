@@ -35,7 +35,7 @@ class CrmFacebookPage(models.Model):
         return
 
     def get_forms(self):
-        r = requests.get("https://graph.facebook.com/v2.12/" + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
+        r = requests.get("https://graph.facebook.com/v7.0/" + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
         self.form_processing(r)
 
 class CrmFacebookForm(models.Model):
@@ -55,13 +55,13 @@ class CrmFacebookForm(models.Model):
 
     def get_fields(self):
         self.mappings.unlink()
-        r = requests.get("https://graph.facebook.com/v2.12/" + self.facebook_form_id, params = {'access_token': self.access_token, 'fields': 'qualifiers'}).json()
-        if r.get('qualifiers'):
-            for qualifier in r.get('qualifiers'):
+        r = requests.get("https://graph.facebook.com/v7.0/" + self.facebook_form_id, params = {'access_token': self.access_token, 'fields': 'questions'}).json()
+        if r.get('questions'):
+            for question in r.get('questions'):
                 self.env['crm.facebook.form.field'].create({
                                                                 'form_id': self.id,
-                                                                'name': qualifier['label'],
-                                                                'facebook_field': qualifier['field_key']
+                                                                'name': question['label'],
+                                                                'facebook_field': question['key']
                                                             })
 
 class CrmFacebookFormField(models.Model):
@@ -285,7 +285,7 @@ class CrmLead(models.Model):
     @api.model
     def get_facebook_leads(self):
         # /!\ TODO: Add this URL as a configuration setting in the company
-        fb_api = "https://graph.facebook.com/v2.12/"
+        fb_api = "https://graph.facebook.com/v7.0/"
         for form in self.env['crm.facebook.form'].search([('allow_to_sync', '=', True)]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
             _logger.info('Starting to fetch leads from Form: %s' % form.name)
