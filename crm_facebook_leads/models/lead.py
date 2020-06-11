@@ -10,6 +10,15 @@ from odoo import models, fields, api
 _logger = logging.getLogger(__name__)
 
 
+def check_version_field(url):
+    version = url.rsplit('v')[-1].rstrip('/')
+    try:
+        ver_num = float(version)
+    except Exception:
+        return 'questions'
+    return 'questions' if ver_num >= 5 else 'qualifiers'
+
+
 class CrmFacebookPage(models.Model):
     _name = 'crm.facebook.page'
     _description = 'Facebook Page'
@@ -59,15 +68,14 @@ class CrmFacebookForm(models.Model):
     def get_fields(self):
         self.mappings.unlink()
         fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
+        vfield = check_version_field(fb_api)
         response = requests.get(
-            fb_api + self.facebook_form_id, params={'access_token': self.access_token, 'fields': 'qualifiers'}).json()
-        if not response.get('qualifiers'):
-            return
-        for qualifier in response.get('qualifiers'):
+            fb_api + self.facebook_form_id, params={'access_token': self.access_token, 'fields': vfield}).json()
+        for qualifier in response.get(vfield, []):
             self.env['crm.facebook.form.field'].create({
                 'form_id': self.id,
                 'name': qualifier['label'],
-                'facebook_field': qualifier['field_key']
+                'facebook_field': qualifier.get('key', False) or qualifier.get('field_key', False)
             })
 
 
