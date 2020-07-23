@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import requests
 from urllib import parse
+import requests
 
 from odoo import models, fields, api
 
@@ -18,28 +18,27 @@ class CrmFacebookPage(models.Model):
     access_token = fields.Char(required=True, string='Page Access Token')
     form_ids = fields.One2many('crm.facebook.form', 'page_id', string='Lead Forms')
 
-    def form_processing(self, r):
-        if not r.get('data'):
+    def form_processing(self, response):
+        if not response.get('data'):
             return
-
-        for form in r['data']:
-            if self.form_ids.filtered(
-                    lambda f: f.facebook_form_id == form['id']):
+        for form in response['data']:
+            if self.form_ids.filtered(lambda f: f.facebook_form_id == form['id']):
                 continue
-            self.env['crm.facebook.form'].create({
+            self.form_ids.create({
                 'name': form['name'],
                 'facebook_form_id': form['id'],
                 'page_id': self.id}).get_fields()
 
-        if r.get('paging') and r['paging'].get('next'):
-            self.form_processing(requests.get(r['paging']['next']).json())
-        return
+        if response.get('paging', {}).get('next'):
+            self.form_processing(requests.get(response['paging']['next']).json())
 
     @api.multi
     def get_forms(self):
         fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
-        r = requests.get(fb_api + self.name + "/leadgen_forms", params = {'access_token': self.access_token}).json()
-        self.form_processing(r)
+        response = requests.get(fb_api + self.name + "/leadgen_forms",
+                                params={'access_token': self.access_token}).json()
+        self.form_processing(response)
+
 
 class CrmFacebookForm(models.Model):
     _name = 'crm.facebook.form'
@@ -51,7 +50,8 @@ class CrmFacebookForm(models.Model):
     access_token = fields.Char(required=True, related='page_id.access_token', string='Page Access Token')
     page_id = fields.Many2one('crm.facebook.page', readonly=True, ondelete='cascade', string='Facebook Page')
     mappings = fields.One2many('crm.facebook.form.field', 'form_id')
-    team_id = fields.Many2one('crm.team', domain=['|', ('use_leads', '=', True), ('use_opportunities', '=', True)], string="Sales Team")
+    team_id = fields.Many2one(
+        'crm.team', domain=['|', ('use_leads', '=', True), ('use_opportunities', '=', True)], string="Sales Team")
     campaign_id = fields.Many2one('utm.campaign')
     source_id = fields.Many2one('utm.source')
     medium_id = fields.Many2one('utm.medium')
@@ -59,14 +59,17 @@ class CrmFacebookForm(models.Model):
     def get_fields(self):
         self.mappings.unlink()
         fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
-        r = requests.get(fb_api + self.facebook_form_id, params = {'access_token': self.access_token, 'fields': 'qualifiers'}).json()
-        if r.get('qualifiers'):
-            for qualifier in r.get('qualifiers'):
-                self.env['crm.facebook.form.field'].create({
-                                                                'form_id': self.id,
-                                                                'name': qualifier['label'],
-                                                                'facebook_field': qualifier['field_key']
-                                                            })
+        response = requests.get(
+            fb_api + self.facebook_form_id, params={'access_token': self.access_token, 'fields': 'qualifiers'}).json()
+        if not response.get('qualifiers'):
+            return
+        for qualifier in response.get('qualifiers'):
+            self.env['crm.facebook.form.field'].create({
+                'form_id': self.id,
+                'name': qualifier['label'],
+                'facebook_field': qualifier['field_key']
+            })
+
 
 class CrmFacebookFormField(models.Model):
     _name = 'crm.facebook.form.field'
@@ -74,26 +77,15 @@ class CrmFacebookFormField(models.Model):
 
     form_id = fields.Many2one('crm.facebook.form', required=True, ondelete='cascade', string='Form')
     name = fields.Char()
-    odoo_field = fields.Many2one('ir.model.fields',
-                                 domain=[('model', '=', 'crm.lead'),
-                                         ('store', '=', True),
-                                         ('ttype', 'in', ('char',
-                                                          'date',
-                                                          'datetime',
-                                                          'float',
-                                                          'html',
-                                                          'integer',
-                                                          'monetary',
-                                                          'many2one',
-                                                          'selection',
-                                                          'phone',
-                                                          'text'))],
-                                 required=False)
+    odoo_field = fields.Many2one(
+        'ir.model.fields',
+        domain=[('model', '=', 'crm.lead'), ('store', '=', True), ('ttype', 'in', (
+            'char', 'date', 'datetime', 'float', 'html', 'integer', 'monetary', 'many2one', 'selection', 'phone',
+            'text'))], required=False)
     facebook_field = fields.Char(required=True)
 
     _sql_constraints = [
-                        ('field_unique', 'unique(form_id, odoo_field, facebook_field)', 'Mapping must be unique per form')
-    ]
+        ('field_unique', 'unique(form_id, odoo_field, facebook_field)', 'Mapping must be unique per form')]
 
 
 class UtmMedium(models.Model):
@@ -101,10 +93,7 @@ class UtmMedium(models.Model):
 
     facebook_ad_id = fields.Char()
 
-    _sql_constraints = [
-        ('facebook_ad_unique', 'unique(facebook_ad_id)',
-         'This Facebook Ad already exists!')
-    ]
+    _sql_constraints = [('facebook_ad_unique', 'unique(facebook_ad_id)', 'This Facebook Ad already exists!')]
 
 
 class UtmAdset(models.Model):
@@ -114,10 +103,7 @@ class UtmAdset(models.Model):
     name = fields.Char()
     facebook_adset_id = fields.Char()
 
-    _sql_constraints = [
-        ('facebook_adset_unique', 'unique(facebook_adset_id)',
-         'This Facebook AdSet already exists!')
-    ]
+    _sql_constraints = [('facebook_adset_unique', 'unique(facebook_adset_id)', 'This Facebook AdSet already exists!')]
 
 
 class UtmCampaign(models.Model):
@@ -126,9 +112,7 @@ class UtmCampaign(models.Model):
     facebook_campaign_id = fields.Char()
 
     _sql_constraints = [
-        ('facebook_campaign_unique', 'unique(facebook_campaign_id)',
-         'This Facebook Campaign already exists!')
-    ]
+        ('facebook_campaign_unique', 'unique(facebook_campaign_id)', 'This Facebook Campaign already exists!')]
 
 
 class CrmLead(models.Model):
@@ -136,61 +120,48 @@ class CrmLead(models.Model):
 
     facebook_lead_id = fields.Char(readonly=True)
     facebook_page_id = fields.Many2one(
-        'crm.facebook.page', related='facebook_form_id.page_id',
-        store=True, readonly=True)
+        'crm.facebook.page', related='facebook_form_id.page_id', store=True, readonly=True)
     facebook_form_id = fields.Many2one('crm.facebook.form', readonly=True)
     facebook_adset_id = fields.Many2one('utm.adset', readonly=True)
     facebook_ad_id = fields.Many2one(
-        'utm.medium', related='medium_id', store=True, readonly=True,
-        string='Facebook Ad')
+        'utm.medium', related='medium_id', store=True, readonly=True, string='Facebook Ad')
     facebook_campaign_id = fields.Many2one(
-        'utm.campaign', related='campaign_id', store=True, readonly=True,
-        string='Facebook Campaign')
+        'utm.campaign', related='campaign_id', store=True, readonly=True, string='Facebook Campaign')
     facebook_date_create = fields.Datetime(readonly=True)
     facebook_is_organic = fields.Boolean(readonly=True)
 
-    _sql_constraints = [
-        ('facebook_lead_unique', 'unique(facebook_lead_id)',
-         'This Facebook lead already exists!')
-    ]
+    _sql_constraints = [('facebook_lead_unique', 'unique(facebook_lead_id)', 'This Facebook lead already exists!')]
 
     def get_ad(self, lead):
         ad_obj = self.env['utm.medium']
         if not lead.get('ad_id'):
             return ad_obj
-        if not ad_obj.search(
-                [('facebook_ad_id', '=', lead['ad_id'])]):
-            return ad_obj.create({
-                'facebook_ad_id': lead['ad_id'], 'name': lead['ad_name'], }).id
+        fb_ad = ad_obj.search([('facebook_ad_id', '=', lead['ad_id'])], limit=1)
+        if not fb_ad:
+            return ad_obj.create({'facebook_ad_id': lead['ad_id'], 'name': lead['ad_name'], }).id
 
-        return ad_obj.search(
-            [('facebook_ad_id', '=', lead['ad_id'])], limit=1)[0].id
+        return fb_ad.id
 
     def get_adset(self, lead):
         ad_obj = self.env['utm.adset']
         if not lead.get('adset_id'):
             return ad_obj
-        if not ad_obj.search(
-                [('facebook_adset_id', '=', lead['adset_id'])]):
-            return ad_obj.create({
-                'facebook_adset_id': lead['adset_id'], 'name': lead['adset_name'], }).id
+        fb_adset = ad_obj.search([('facebook_adset_id', '=', lead['adset_id'])], limit=1)
+        if not fb_adset:
+            return ad_obj.create({'facebook_adset_id': lead['adset_id'], 'name': lead['adset_name'], }).id
 
-        return ad_obj.search(
-            [('facebook_adset_id', '=', lead['adset_id'])], limit=1)[0].id
+        return fb_adset.id
 
     def get_campaign(self, lead):
         campaign_obj = self.env['utm.campaign']
         if not lead.get('campaign_id'):
             return campaign_obj
-        if not campaign_obj.search(
-                [('facebook_campaign_id', '=', lead['campaign_id'])]):
+        fb_camp = campaign_obj.search([('facebook_campaign_id', '=', lead['campaign_id'])], limit=1)
+        if not fb_camp:
             return campaign_obj.create({
-                'facebook_campaign_id': lead['campaign_id'],
-                'name': lead['campaign_name'], }).id
+                'facebook_campaign_id': lead['campaign_id'], 'name': lead['campaign_name'], }).id
 
-        return campaign_obj.search(
-            [('facebook_campaign_id', '=', lead['campaign_id'])],
-            limit=1)[0].id
+        return fb_camp.id
 
     def prepare_lead_creation(self, lead, form):
         vals, notes = self.get_fields_from_data(lead, form)
@@ -268,31 +239,28 @@ class CrmLead(models.Model):
                           if l.get('name') and l.get('values')])
         return lead_data
 
-    def lead_processing(self, r, form):
-        if not r.get('data'):
-            return
-        for lead in r['data']:
-            lead = self.process_lead_field_data(lead)
-            if not self.search([('facebook_lead_id', '=', lead.get('id')), '|', ('active', '=', True), ('active', '=', False)]):
-                self.lead_creation(lead, form)
+    def lead_processing(self, response, form):
+        data = response.get('data', False)
+        while data:
+            # /!\ NOTE: Once finished a page let us commit that
+            with self.env.cr.savepoint():
+                for lead in data:
+                    lead = self.process_lead_field_data(lead)
+                    if not self.search([('facebook_lead_id', '=', lead.get('id'))]):
+                        self.lead_creation(lead, form)
 
-        # /!\ NOTE: Once finished a page let us commit that
-        try:
-            self.env.cr.commit()
-        except Exception:
-            self.env.cr.rollback()
-
-        if r.get('paging') and r['paging'].get('next'):
-            _logger.info('Fetching a new page in Form: %s' % form.name)
-            self.lead_processing(requests.get(r['paging']['next']).json(), form)
-        return
+            if response.get('paging', {}).get('next'):
+                res = requests.get(response['paging']['next']).json()
+                data = res.get('data', False)
+            else:
+                data = False
 
     @api.model
     def get_facebook_leads(self):
         fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
         for form in self.env['crm.facebook.form'].search([('allow_to_sync', '=', True)]):
             # /!\ NOTE: We have to try lead creation if it fails we just log it into the Lead Form?
-            _logger.info('Starting to fetch leads from Form: %s' % form.name)
+            _logger.info('Starting to fetch leads from Form: %s', form.name)
             var = fb_api + form.facebook_form_id + "/leads"
             params = {
                 'access_token': form.access_token,
@@ -301,6 +269,6 @@ class CrmLead(models.Model):
                     {"field": "time_created",
                      "operator": "GREATER_THAN", "value": 1537920000}],
             }
-            r = requests.get(var, params=parse.urlencode(params))
-            self.lead_processing(r.json(), form)
+            response = requests.get(var, params=parse.urlencode(params)).json()
+            self.lead_processing(response, form)
         _logger.info('Fetch of leads has ended')
