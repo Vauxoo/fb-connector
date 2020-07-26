@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Facebook Connector)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-26 02:36+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2020-07-26 02:46+0000\n"
+"Last-Translator: Weblate Admin <weblate.admin@vauxoo.com>\n"
 "Language-Team: Spanish <http://weblate.vauxoo.com/projects/fb-connector/"
 "crm_facebook_lead/es/>\n"
 "Language: es\n"
@@ -17,180 +17,180 @@ msgstr ""
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_team_id
 msgid "Assign Team"
-msgstr ""
+msgstr "Asignar Equipo"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_create_uid,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_create_uid,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creado por"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_create_date,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_create_date,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creado el"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_display_name,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_display_name,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nombre a Mostrar"
 
 #. module: crm_facebook_leads
 #: model:ir.actions.act_window,name:crm_facebook_leads.action_crm_facebook_form
 msgid "Facebook Forms"
-msgstr ""
+msgstr "Formularios de Facebook"
 
 #. module: crm_facebook_leads
 #: model:ir.ui.view,arch_db:crm_facebook_leads.crm_lead_form
 msgid "Facebook Info"
-msgstr ""
+msgstr "Info de Facebook"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_page_id,
 #: model:ir.ui.view,arch_db:crm_facebook_leads.crm_facebook_page_form,
 #: model:ir.ui.view,arch_db:crm_facebook_leads.crm_facebook_page_tree
 msgid "Facebook Page"
-msgstr ""
+msgstr "Página de Facebook"
 
 #. module: crm_facebook_leads
 #: model:ir.actions.act_window,name:crm_facebook_leads.action_crm_facebook_page,
 #: model:ir.ui.menu,name:crm_facebook_leads.menu_crm_facebook_page
 msgid "Facebook Pages"
-msgstr ""
+msgstr "Páginas de Facebook"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_facebook_field
 msgid "Facebook field"
-msgstr ""
+msgstr "Campo de Facebook"
 
 #. module: crm_facebook_leads
 #: model:ir.ui.view,arch_db:crm_facebook_leads.crm_facebook_form_form
 msgid "Facebook form"
-msgstr ""
+msgstr "Formulario de Facebook"
 
 #. module: crm_facebook_leads
 #: model:ir.ui.menu,name:crm_facebook_leads.menu_crm_facebook_form
 msgid "Facebook forms"
-msgstr ""
+msgstr "Formularios de Facebook"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_form_id,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_lead_facebook_form_id
 msgid "Form"
-msgstr ""
+msgstr "Formulario"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_facebook_form_id
 msgid "Form ID"
-msgstr ""
+msgstr "ID del Formulario"
 
 #. module: crm_facebook_leads
 #: model:ir.ui.view,arch_db:crm_facebook_leads.crm_facebook_form_form
 msgid "Get Fields"
-msgstr ""
+msgstr "Obtener Campos"
 
 #. module: crm_facebook_leads
 #: model:ir.ui.view,arch_db:crm_facebook_leads.crm_facebook_page_form
 msgid "Get Forms"
-msgstr ""
+msgstr "Obtener Formularios"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_id,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_id,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form___last_update,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field___last_update,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page___last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Última Modificación el"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_write_uid,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_write_uid,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Última Modificación por"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_write_date,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_write_date,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Última Modifación el"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_form_ids
 msgid "Lead Forms"
-msgstr ""
+msgstr "Formularios de Iniciativas"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_lead_facebook_lead_id
 msgid "Lead ID"
-msgstr ""
+msgstr "ID de la Iniciativa"
 
 #. module: crm_facebook_leads
 #: model:ir.model,name:crm_facebook_leads.model_crm_lead
 msgid "Lead/Opportunity"
-msgstr ""
+msgstr "Iniciativa/Oportunidad"
 
 #. module: crm_facebook_leads
 #: sql_constraint:crm.facebook.form.field:0
 msgid "Mapping must be unique per form"
-msgstr ""
+msgstr "El mapeo debe ser único por formulario"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_mappings
 msgid "Mappings"
-msgstr ""
+msgstr "Mapeos"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_name,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_name,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_name
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_field_odoo_field
 msgid "Odoo field"
-msgstr ""
+msgstr "Campo de Odoo"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_lead_facebook_page_id
 msgid "Page"
-msgstr ""
+msgstr "Página"
 
 #. module: crm_facebook_leads
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_form_access_token,
 #: model:ir.model.fields,field_description:crm_facebook_leads.field_crm_facebook_page_access_token
 msgid "Page Access Token"
-msgstr ""
+msgstr "Token de Acceso a la Página"
 
 #. module: crm_facebook_leads
 #: sql_constraint:crm.lead:0
 msgid "This Facebook lead already exists!"
-msgstr ""
+msgstr "¡Esta Iniciativa de Facebook ya existe!"
 
 #. module: crm_facebook_leads
 #: model:ir.model,name:crm_facebook_leads.model_crm_facebook_form
 msgid "crm.facebook.form"
-msgstr ""
+msgstr "crm.facebook.form"
 
 #. module: crm_facebook_leads
 #: model:ir.model,name:crm_facebook_leads.model_crm_facebook_form_field
 msgid "crm.facebook.form.field"
-msgstr ""
+msgstr "crm.facebook.form.field"
 
 #. module: crm_facebook_leads
 #: model:ir.model,name:crm_facebook_leads.model_crm_facebook_page
 msgid "crm.facebook.page"
-msgstr ""
+msgstr "crm.facebook.page"
