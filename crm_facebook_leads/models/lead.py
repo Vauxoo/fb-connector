@@ -258,8 +258,8 @@ class CrmLead(models.Model):
                         self.lead_creation(lead, form)
 
             if response.get('paging', {}).get('next'):
-                res = requests.get(response['paging']['next']).json()
-                data = res.get('data', False)
+                response = requests.get(response['paging']['next']).json()
+                data = response.get('data', False)
             else:
                 data = False
 
