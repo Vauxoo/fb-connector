@@ -253,8 +253,8 @@ class CrmLead(models.Model):
             with self.env.cr.savepoint():
                 for lead in data:
                     lead = self.process_lead_field_data(lead)
-                    if not self.search([('facebook_lead_id', '=', lead.get('id')),
-                                        '|', ('active', '=', False), ('active', '=', True)]):
+                    if not self.with_context(active_test=False).search([('facebook_lead_id', '=', lead.get('id'))],
+                                                                       limit=1):
                         self.lead_creation(lead, form)
 
             if response.get('paging', {}).get('next'):
