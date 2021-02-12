@@ -1,2 +1,4 @@
-# BADEP Addons for Odoo
-This is the main repository for Odoo modules developed by BADEP. These can be micro-modules which add minor functionalities, vertical modules which can contain a whole functionala axis or Moroccan localization.
+# Modules to connect with Facebook
+
+This repository contains modules intended to integrate Odoo with Facebook ®,
+e.g. to retrieve leads.

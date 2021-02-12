@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="crm_facebook_form_form" model="ir.ui.view">
+        <field name="name">crm.facebook.form.form</field>
+        <field name="model">crm.facebook.form</field>
+        <field name="arch" type="xml">
+            <form string="Facebook form">
+                <button name="get_fields" type="object" string="Get Fields"/>
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="allow_to_sync"/>
+                        <field name="team_id"/>
+                    </group>
+                    <group>
+                        <field name="page_id" readonly='1'/>
+                        <field name="id_facebook_form"/>
+                        <field name="access_token" invisible="1"/>
+                    </group>
+                    <group string="Tracking Info">
+                        <field name="campaign_id"/>
+                        <field name="medium_id"/>
+                        <field name="source_id"/>
+                    </group>
+                </group>
+                <group colspan="2" string="Mappings">
+                    <field name="mappings">
+                        <tree editable="bottom">
+                            <field name="name"/>
+                            <field name="facebook_field"/>
+                            <field name="odoo_field"/>
+                        </tree>
+                    </field>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="crm_facebook_form_tree" model="ir.ui.view">
+        <field name="name">crm.facebook.form.tree</field>
+        <field name="model">crm.facebook.form</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="allow_to_sync"/>
+                <field name="id_facebook_form"/>
+                <field name="page_id" readonly='1'/>
+                <field name="team_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_crm_facebook_form" model="ir.actions.act_window">
+        <field name="name">Facebook Forms</field>
+        <field name="res_model">crm.facebook.form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="crm_facebook_form_tree"/>
+    </record>
+
+    <menuitem
+        id="menu_crm_facebook_form"
+        name="Facebook Forms"
+        parent="crm.menu_crm_config_lead"
+        sequence="101"
+        action="action_crm_facebook_form"
+        groups="sales_team.group_sale_manager"/>
+
+</odoo>

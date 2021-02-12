@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<odoo noupdate="1">
+
+    <record id="crm_facebook_cron" model="ir.cron">
+        <field name="name">CRM Facebook Lead Ads: Fetch leads</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field name="model_id" ref="model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="code">model.get_facebook_leads()</field>
+    </record>
+
+</odoo>
