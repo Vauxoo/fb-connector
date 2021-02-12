@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="crm_lead_view_form" model="ir.ui.view">
+        <field name="name">crm.lead.form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr='//page[@name="extra"]' position='after'>
+                <page name="categorization" string="Facebook Info">
+                    <group name="facebook_info" string="Facebook Info">
+                        <field name="id_facebook_lead"/>
+                        <field name="facebook_date_create"/>
+                        <field name="facebook_page_id"/>
+                        <field name="facebook_form_id"/>
+                        <field name="facebook_adset_id"/>
+                        <field name="facebook_ad_id"/>
+                        <field name="facebook_campaign_id"/>
+                        <field name="facebook_is_organic"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
