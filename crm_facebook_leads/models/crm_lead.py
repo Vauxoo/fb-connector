@@ -11,15 +11,11 @@ _logger = logging.getLogger()
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    id_facebook_lead = fields.Char(readonly=True)
+    id_facebook_lead = fields.Char(string="Facebook Lead ID", readonly=True)
     facebook_page_id = fields.Many2one(
         'crm.facebook.page', related='facebook_form_id.page_id', store=True)
     facebook_form_id = fields.Many2one('crm.facebook.form', readonly=True)
     facebook_adset_id = fields.Many2one('utm.adset', readonly=True)
-    facebook_ad_id = fields.Many2one(
-        'utm.medium', related='medium_id', store=True, readonly=True, string='Facebook Ad')
-    facebook_campaign_id = fields.Many2one(
-        'utm.campaign', related='campaign_id', store=True, readonly=True, string='Facebook Campaign')
     facebook_date_create = fields.Datetime(readonly=True)
     facebook_is_organic = fields.Boolean(readonly=True)
 
@@ -98,13 +94,13 @@ class CrmLead(models.Model):
 
     def get_fields_from_data(self, lead, form):
         vals, notes = {}, []
-        form_mapping = form.mappings.filtered(lambda m: m.odoo_field).mapped('facebook_field')
+        form_mapping = form.mappings.filtered("odoo_field_id").mapped('facebook_field')
         unmapped_fields = []
         for name, value in lead.items():
             if name not in form_mapping:
                 unmapped_fields.append((name, value))
                 continue
-            odoo_field = form.mappings.filtered(lambda m: m.facebook_field == name).odoo_field
+            odoo_field = form.mappings.filtered(lambda m: m.facebook_field == name).odoo_field_id
             notes.append('%s: %s' % (odoo_field.field_description, value))
             if odoo_field.ttype == 'many2one':
                 related_value = self.env[odoo_field.relation].search([('display_name', '=', value)])
