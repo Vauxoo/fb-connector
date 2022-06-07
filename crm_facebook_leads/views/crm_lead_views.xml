@@ -14,8 +14,6 @@
                         <field name="facebook_page_id"/>
                         <field name="facebook_form_id"/>
                         <field name="facebook_adset_id"/>
-                        <field name="facebook_ad_id"/>
-                        <field name="facebook_campaign_id"/>
                         <field name="facebook_is_organic"/>
                     </group>
                 </page>

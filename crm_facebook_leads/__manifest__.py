@@ -4,8 +4,8 @@
         Sync Facebook Leads with Odoo CRM""",
     'author': "BADEP, Vauxoo",
     'website': "https://badep.ma, www.vauxoo.com",
-    'category': 'Lead Automation',
-    'version': '14.0.1.0.0',
+    'category': 'Sales/CRM',
+    'version': '15.0.1.0.0',
     'depends': [
         'crm',
     ],
