@@ -33,7 +33,7 @@ class CrmFacebookForm(models.Model):
         fb_api = self.env['ir.config_parameter'].get_param('facebook.api.url')
         vfield = check_version_field(fb_api)
         response = requests.get(
-            fb_api + self.facebook_form, params={'access_token': self.access_token, 'fields': vfield}).json()
+            fb_api + self.id_facebook_form, params={'access_token': self.access_token, 'fields': vfield}).json()
         for qualifier in response.get(vfield, []):
             self.env['crm.facebook.form.field'].create({
                 'form_id': self.id,
